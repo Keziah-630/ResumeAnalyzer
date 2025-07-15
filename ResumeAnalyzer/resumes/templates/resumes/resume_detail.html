@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ resume.full_name }} - Resume Detail{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <i class="fas fa-user me-2"></i>{{ resume.full_name }}
+                </h3>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><i class="fas fa-envelope me-2"></i>{{ resume.email }}</p>
+                        <p><i class="fas fa-phone me-2"></i>{{ resume.phone }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        {% if resume.github %}
+                        <p><i class="fab fa-github me-2"></i><a href="{{ resume.github }}" target="_blank">GitHub</a></p>
+                        {% endif %}
+                        {% if resume.linkedin %}
+                        <p><i class="fab fa-linkedin me-2"></i><a href="{{ resume.linkedin }}" target="_blank">LinkedIn</a></p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h5><i class="fas fa-tools me-2"></i>Skills</h5>
+                <div class="mb-3">
+                    {% for skill in resume.skills|split:"," %}
+                    <span class="badge bg-info me-1 mb-1">{{ skill|strip }}</span>
+                    {% endfor %}
+                </div>
+                
+                <h5><i class="fas fa-graduation-cap me-2"></i>Education</h5>
+                <p>{{ resume.education|linebreaks }}</p>
+                
+                <h5><i class="fas fa-briefcase me-2"></i>Experience</h5>
+                <p>{{ resume.experience|linebreaks }}</p>
+                
+                <div class="mt-3">
+                    <a href="{{ resume.resume_file.url }}" target="_blank" class="btn btn-primary">
+                        <i class="fas fa-download me-2"></i>Download Resume
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Analysis Status -->
+        {% if analysis %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-chart-line me-2"></i>Analysis Results
+                </h5>
+                <div class="text-center mb-3">
+                    <div class="display-4 text-{{ analysis.score_color }} mb-2">
+                        {{ analysis.overall_score }}%
+                    </div>
+                    <small class="text-muted">Overall Score</small>
+                </div>
+                <a href="{% url 'analysis_detail' resume.id %}" class="btn btn-outline-info w-100">
+                    <i class="fas fa-chart-line me-2"></i>View Full Analysis
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-magic me-2"></i>Resume Analysis
+                </h5>
+                <p class="text-muted">Get AI-powered insights about your resume.</p>
+                <a href="{% url 'analyze_resume' resume.id %}" class="btn btn-warning w-100">
+                    <i class="fas fa-magic me-2"></i>Analyze Resume
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Job Matches -->
+        {% if matches %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-handshake me-2"></i>Top Job Matches
+                </h5>
+                {% for match in matches %}
+                <div class="mb-2 p-2 border rounded">
+                    <h6 class="mb-1">{{ match.job.title }}</h6>
+                    <p class="small text-muted mb-1">{{ match.job.company }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-{{ match.match_level|yesno:'success,warning,info,secondary,danger' }}">
+                            {{ match.match_score }}% Match
+                        </span>
+                        <a href="{% url 'match_detail' match.id %}" class="btn btn-sm btn-outline-primary">
+                            View
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                <a href="{% url 'job_matches' %}" class="btn btn-outline-info w-100 mt-2">
+                    <i class="fas fa-handshake me-2"></i>View All Matches
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-cogs me-2"></i>Quick Actions
+                </h5>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'upload_resume' %}" class="btn btn-outline-success">
+                        <i class="fas fa-upload me-2"></i>Upload New Resume
+                    </a>
+                    <a href="{% url 'job_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-briefcase me-2"></i>Browse Jobs
+                    </a>
+                    <a href="{% url 'delete_resume' resume.id %}" class="btn btn-outline-danger">
+                        <i class="fas fa-trash me-2"></i>Delete Resume
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <a href="{% url 'resume_list' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Resumes
+        </a>
+    </div>
+</div>
+{% endblock %} 

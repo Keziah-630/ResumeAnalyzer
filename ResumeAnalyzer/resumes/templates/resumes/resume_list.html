@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load resume_extras %}
+
+{% block title %}My Resumes - Resume Analyzer{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h3>
+            <i class="fas fa-file-alt me-2"></i>My Resumes
+            {% if resumes %}
+            <span class="badge bg-primary ms-2">{{ resumes.count }}</span>
+            {% endif %}
+        </h3>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{% url 'upload_resume' %}" class="btn btn-primary">
+            <i class="fas fa-upload me-2"></i>Upload New Resume
+        </a>
+    </div>
+</div>
+
+{% if resumes %}
+<div class="row">
+    {% for resume in resumes %}
+    <div class="col-md-6 mb-3">
+        <div class="card resume-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title">{{ resume.full_name }}</h5>
+                        <p class="text-muted mb-1">
+                            <i class="fas fa-envelope me-1"></i>{{ resume.email }}
+                        </p>
+                        <p class="text-muted mb-1">
+                            <i class="fas fa-phone me-1"></i>{{ resume.phone }}
+                        </p>
+                    </div>
+                    <div class="text-end">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>{{ resume.uploaded_at|date:"M d, Y" }}
+                        </small>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Skills</h6>
+                    <div class="skills-container">
+                        {% for skill in resume.skills|slice:":100"|split:"," %}
+                        <span class="badge bg-info me-1 mb-1">{{ skill|truncatechars:15 }}</span>
+                        {% endfor %}
+                        {% if resume.skills|length > 100 %}
+                        <small class="text-muted">+ more</small>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <small class="text-muted">
+                            <i class="fas fa-handshake me-1"></i>{{ resume.match_count }} matches
+                        </small>
+                    </div>
+                    <div class="col-6 text-end">
+                        {% if resume.has_analysis %}
+                        <span class="badge bg-success">
+                            <i class="fas fa-chart-line me-1"></i>Analyzed
+                        </span>
+                        {% else %}
+                        <span class="badge bg-warning">
+                            <i class="fas fa-clock me-1"></i>Not Analyzed
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="btn-group w-100">
+                    <a href="{% url 'resume_detail' resume.id %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-eye me-1"></i>View
+                    </a>
+                    {% if resume.has_analysis %}
+                    <a href="{% url 'analysis_detail' resume.id %}" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-chart-line me-1"></i>Analysis
+                    </a>
+                    {% else %}
+                    <a href="{% url 'analyze_resume' resume.id %}" class="btn btn-outline-warning btn-sm">
+                        <i class="fas fa-magic me-1"></i>Analyze
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'delete_resume' resume.id %}" class="btn btn-outline-danger btn-sm">
+                        <i class="fas fa-trash me-1"></i>Delete
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                <h5>No resumes uploaded yet</h5>
+                <p class="text-muted">Upload your first resume to get started with job matching and analysis.</p>
+                <a href="{% url 'upload_resume' %}" class="btn btn-primary">
+                    <i class="fas fa-upload me-2"></i>Upload Your First Resume
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col-12">
+        <a href="{% url 'job_matches' %}" class="btn btn-outline-info">
+            <i class="fas fa-handshake me-2"></i>View Job Matches
+        </a>
+        <a href="{% url 'job_list' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-briefcase me-2"></i>Browse Jobs
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Analyze Resume - {{ resume.full_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">
+                    <i class="fas fa-magic me-2"></i>Resume Analysis
+                </h3>
+                
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-info-circle me-2"></i>About Resume Analysis</h6>
+                    <p class="mb-0">
+                        Our AI will analyze your resume and provide insights on skills, experience, 
+                        formatting, and career recommendations. This helps improve your job matching 
+                        and career development.
+                    </p>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-user me-2"></i>Resume Details</h6>
+                        <p><strong>Name:</strong> {{ resume.full_name }}</p>
+                        <p><strong>Email:</strong> {{ resume.email }}</p>
+                        <p><strong>Uploaded:</strong> {{ resume.uploaded_at|date:"M d, Y" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-tools me-2"></i>Skills Overview</h6>
+                        <div class="skills-preview">
+                            {% for skill in resume.skills|split:","|slice:":5" %}
+                            <span class="badge bg-info me-1 mb-1">{{ skill|strip }}</span>
+                            {% endfor %}
+                            {% if resume.skills|split:","|length > 5 %}
+                            <small class="text-muted">+{{ resume.skills|split:","|length|add:"-5" }} more</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                {% if analysis.overall_score %}
+                <div class="alert alert-warning">
+                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Analysis Already Exists</h6>
+                    <p class="mb-2">This resume has already been analyzed with a score of <strong>{{ analysis.overall_score }}%</strong>.</p>
+                    <a href="{% url 'analysis_detail' resume.id %}" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-chart-line me-1"></i>View Analysis
+                    </a>
+                </div>
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-warning btn-lg">
+                            <i class="fas fa-magic me-2"></i>Start Analysis
+                        </button>
+                        <a href="{% url 'resume_detail' resume.id %}" class="btn btn-outline-secondary btn-lg ms-2">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Resume
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

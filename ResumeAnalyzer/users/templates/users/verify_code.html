@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Code - Resume Analyzer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card">
+            <div class="card-body p-4">
+                <h3 class="text-center mb-4 glow-text">
+                    <i class="fas fa-shield-alt me-2"></i>Verify Code
+                </h3>
+                
+                <div class="alert alert-info mb-4">
+                    <h6><i class="fas fa-info-circle me-2"></i>Verification Required</h6>
+                    <p class="mb-0">
+                        Please enter the 6-digit verification code that was sent to you.
+                    </p>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.verification_code.id_for_label }}" class="form-label">
+                            <i class="fas fa-key me-1"></i>Verification Code
+                        </label>
+                        {{ form.verification_code }}
+                        {% if form.verification_code.errors %}
+                            <div class="text-danger mt-1">
+                                {% for error in form.verification_code.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check me-2"></i>Verify Code
+                        </button>
+                        <a href="{% url 'forgot_password' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Forgot Password
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

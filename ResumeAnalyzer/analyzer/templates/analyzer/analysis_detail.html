@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Resume Analysis - {{ resume.full_name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-line me-2"></i>Resume Analysis Results
+                </h3>
+                <p class="text-muted">Analysis completed on {{ analysis.analysis_date|date:"M d, Y" }}</p>
+                
+                <!-- Overall Score -->
+                <div class="text-center mb-4">
+                    <div class="display-4 text-{{ analysis.score_color }} mb-2">
+                        {{ analysis.overall_score }}%
+                    </div>
+                    <h5>Overall Score</h5>
+                    <div class="progress mb-3">
+                        <div class="progress-bar bg-{{ analysis.score_color }}" role="progressbar" style="width: {{ analysis.overall_score }}%">
+                            {{ analysis.overall_score }}%
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Detailed Scores -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h4 class="text-info">{{ analysis.skills_score }}%</h4>
+                            <small>Skills</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h4 class="text-warning">{{ analysis.experience_score }}%</h4>
+                            <small>Experience</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h4 class="text-success">{{ analysis.education_score }}%</h4>
+                            <small>Education</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h4 class="text-primary">{{ analysis.formatting_score }}%</h4>
+                            <small>Formatting</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Skills Analysis -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-tools me-2"></i>Skills Analysis
+                </h5>
+                
+                <h6>Extracted Skills</h6>
+                <div class="mb-3">
+                    {% for skill in analysis.extracted_skills %}
+                    <span class="badge bg-success me-1">{{ skill }}</span>
+                    {% endfor %}
+                </div>
+                
+                <h6>Skill Gaps</h6>
+                <div class="mb-3">
+                    {% for skill in analysis.skill_gaps %}
+                    <span class="badge bg-warning me-1">{{ skill }}</span>
+                    {% endfor %}
+                </div>
+                
+                <h6>Industry Keywords</h6>
+                <div class="mb-3">
+                    {% for keyword in analysis.industry_keywords %}
+                    <span class="badge bg-info me-1">{{ keyword }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recommendations -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-lightbulb me-2"></i>Recommendations
+                </h5>
+                <ul class="list-group list-group-flush">
+                    {% for recommendation in analysis.recommendations %}
+                    <li class="list-group-item bg-transparent text-white">
+                        <i class="fas fa-check-circle text-success me-2"></i>{{ recommendation }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Career Insights -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-brain me-2"></i>Career Insights
+                </h5>
+                
+                {% for insight in career_insights %}
+                <div class="mb-3 p-3 border border-{{ insight.priority|yesno:'danger,warning,info' }} rounded">
+                    <h6 class="text-{{ insight.priority|yesno:'danger,warning,info' }}">
+                        {{ insight.title }}
+                    </h6>
+                    <p class="small">{{ insight.description }}</p>
+                    
+                    {% if insight.action_items %}
+                    <small class="text-muted">Action Items:</small>
+                    <ul class="small">
+                        {% for item in insight.action_items %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-rocket me-2"></i>Quick Actions
+                </h5>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'job_matches' %}" class="btn btn-primary">
+                        <i class="fas fa-handshake me-2"></i>View Job Matches
+                    </a>
+                    <a href="{% url 'resume_detail' resume.id %}" class="btn btn-outline-info">
+                        <i class="fas fa-file-alt me-2"></i>View Resume
+                    </a>
+                    <a href="{% url 'upload_resume' %}" class="btn btn-outline-success">
+                        <i class="fas fa-upload me-2"></i>Upload New Resume
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <a href="{% url 'analyze_resume' resume.id %}" class="btn btn-warning">
+            <i class="fas fa-sync me-2"></i>Re-analyze Resume
+        </a>
+        <a href="{% url 'resume_list' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Resumes
+        </a>
+    </div>
+</div>
+{% endblock %} 

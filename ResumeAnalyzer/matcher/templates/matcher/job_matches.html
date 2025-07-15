@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Matches - Resume Analyzer{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h3>
+            <i class="fas fa-handshake me-2"></i>Your Job Matches
+            {% if total_matches %}
+            <span class="badge bg-primary ms-2">{{ total_matches }}</span>
+            {% endif %}
+        </h3>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{% url 'match_preferences' %}" class="btn btn-outline-info">
+            <i class="fas fa-cog me-2"></i>Preferences
+        </a>
+    </div>
+</div>
+
+{% if matches %}
+<div class="row">
+    {% for match in matches %}
+    <div class="col-12 mb-3">
+        <div class="card match-card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0">
+                                <a href="{% url 'match_detail' match.id %}" class="text-decoration-none">
+                                    {{ match.job.title }}
+                                </a>
+                            </h5>
+                            <div class="text-end">
+                                <div class="display-6 text-{{ match.match_level|yesno:'success,warning,info,secondary,danger' }} mb-1">
+                                    {{ match.match_score }}%
+                                </div>
+                                <small class="text-muted">{{ match.match_level|title }} Match</small>
+                            </div>
+                        </div>
+                        
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            <i class="fas fa-building me-1"></i>{{ match.job.company }}
+                        </h6>
+                        <p class="card-text mb-2">
+                            <i class="fas fa-map-marker-alt me-1"></i>{{ match.job.location }}
+                        </p>
+                        
+                        <div class="mb-2">
+                            <span class="badge bg-info me-1">{{ match.job.get_job_type_display }}</span>
+                            <span class="badge bg-secondary me-1">{{ match.job.get_experience_level_display }}</span>
+                            {% if match.job.salary_range != "Not specified" %}
+                            <span class="badge bg-success">{{ match.job.salary_range }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Match Details -->
+                        <div class="row mb-2">
+                            <div class="col-md-4">
+                                <small class="text-muted">Skills Match: {{ match.skills_match }}%</small>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted">Experience Match: {{ match.experience_match }}%</small>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted">Location Match: {{ match.location_match }}%</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Matching Skills -->
+                        {% if match.matching_skills %}
+                        <div class="mb-2">
+                            <small class="text-muted">Matching Skills:</small>
+                            {% for skill in match.matching_skills|slice:":5" %}
+                            <span class="badge bg-success me-1">{{ skill }}</span>
+                            {% endfor %}
+                            {% if match.matching_skills|length > 5 %}
+                            <small class="text-muted">+{{ match.matching_skills|length|add:"-5" }} more</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-4 text-md-end">
+                        <div class="mb-2">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>Matched {{ match.created_at|timesince }} ago
+                            </small>
+                        </div>
+                        
+                        <div class="btn-group-vertical w-100">
+                            <a href="{% url 'match_detail' match.id %}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>View Details
+                            </a>
+                            {% if not match.is_applied %}
+                            <a href="{% url 'apply_from_match' match.id %}" class="btn btn-success btn-sm">
+                                <i class="fas fa-paper-plane me-1"></i>Apply Now
+                            </a>
+                            {% else %}
+                            <span class="btn btn-secondary btn-sm disabled">
+                                <i class="fas fa-check me-1"></i>Applied
+                            </span>
+                            {% endif %}
+                            <a href="{% url 'toggle_favorite' match.id %}" class="btn btn-outline-{{ match.is_favorite|yesno:'warning,secondary' }} btn-sm">
+                                <i class="fas fa-{{ match.is_favorite|yesno:'star,star' }} me-1"></i>{{ match.is_favorite|yesno:'Favorited,Favorite' }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if matches.has_other_pages %}
+<nav aria-label="Match pagination">
+    <ul class="pagination justify-content-center">
+        {% if matches.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ matches.previous_page_number }}">
+                <i class="fas fa-chevron-left"></i> Previous
+            </a>
+        </li>
+        {% endif %}
+        
+        {% for num in matches.paginator.page_range %}
+        {% if matches.number == num %}
+        <li class="page-item active">
+            <span class="page-link">{{ num }}</span>
+        </li>
+        {% elif num > matches.number|add:'-3' and num < matches.number|add:'3' %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+        
+        {% if matches.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ matches.next_page_number }}">
+                Next <i class="fas fa-chevron-right"></i>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h5>No job matches found</h5>
+                <p class="text-muted">Upload a resume to start getting personalized job matches.</p>
+                <a href="{% url 'upload_resume' %}" class="btn btn-primary">
+                    <i class="fas fa-upload me-2"></i>Upload Resume
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col-12">
+        <a href="{% url 'job_list' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-briefcase me-2"></i>Browse All Jobs
+        </a>
+        <a href="{% url 'match_history' %}" class="btn btn-outline-info">
+            <i class="fas fa-history me-2"></i>View History
+        </a>
+    </div>
+</div>
+{% endblock %} 

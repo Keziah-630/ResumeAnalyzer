@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+<div class="container mt-5 card p-4">
+  <h2 class="text-center glow">Upload Your Resume</h2>
+  <form method="POST" enctype="multipart/form-data" id="resumeForm">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="text-center">
+      <button type="submit" class="btn btn-outline-info">Submit</button>
+    </div>
+  </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.getElementById("resumeForm").addEventListener("submit", function(event) {
+  const email = document.querySelector("input[name='email']").value;
+  const phone = document.querySelector("input[name='phone']").value;
+  const fullName = document.querySelector("input[name='full_name']").value;
+
+  const emailPattern = /^[^@]+@[^@]+\.[^@]+$/;
+  const phonePattern = /^\+?\d{10,15}$/;
+
+  // User's profile details from Django context
+  const userEmail = "{{ user.email|escapejs }}";
+  const userFullName = "{{ user.get_full_name|escapejs }}";
+
+  let mismatch = false;
+  let mismatchFields = [];
+  if (userEmail && email && userEmail !== email) {
+    mismatch = true;
+    mismatchFields.push('Email');
+  }
+  if (userFullName && fullName && userFullName !== fullName) {
+    mismatch = true;
+    mismatchFields.push('Full Name');
+  }
+  // Optionally, add phone check if user has phone in profile
+
+  if (!emailPattern.test(email)) {
+    event.preventDefault();
+    Swal.fire("Invalid Email", "Please enter a valid email address.", "warning");
+  } else if (!phonePattern.test(phone)) {
+    event.preventDefault();
+    Swal.fire("Invalid Phone", "Please enter a valid phone number.", "warning");
+  } else if (mismatch) {
+    event.preventDefault();
+    Swal.fire({
+      icon: 'warning',
+      title: 'Details Mismatch',
+      html: `The following details do not match your profile: <b>${mismatchFields.join(', ')}</b>.<br>Please update your resume or your profile to match before uploading.`,
+      confirmButtonText: 'OK'
+    });
+  }
+});
+</script>
+{% endblock %}

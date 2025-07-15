@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Resume Analyzer & Job Matcher{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 text-center mb-5">
+        <h1 class="display-3 glow-text mb-4">Resume Analyzer & Job Matcher</h1>
+        <p class="lead mb-4">AI-powered platform to analyze resumes and find the perfect job matches</p>
+        {% if not user.is_authenticated %}
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-user-plus me-2"></i>Get Started
+            </a>
+            <a href="{% url 'login' %}" class="btn btn-outline-info btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i>Login
+            </a>
+        </div>
+        {% else %}
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'upload_resume' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-upload me-2"></i>Upload Resume
+            </a>
+            <a href="{% url 'job_list' %}" class="btn btn-outline-info btn-lg">
+                <i class="fas fa-briefcase me-2"></i>Browse Jobs
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <h4>Resume Analysis</h4>
+            <p>Upload your resume and get detailed analysis including skills extraction, experience assessment, and improvement suggestions.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-briefcase"></i>
+            </div>
+            <h4>Job Matching</h4>
+            <p>Find jobs that perfectly match your skills and experience using our advanced AI matching algorithm.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h4>Career Insights</h4>
+            <p>Get valuable insights about your career path, skill gaps, and recommendations for professional growth.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-rocket me-2"></i>How It Works
+                </h5>
+                <ol class="list-group list-group-numbered list-group-flush">
+                    <li class="list-group-item bg-transparent text-white">Upload your resume in PDF or DOC format</li>
+                    <li class="list-group-item bg-transparent text-white">Our AI analyzes your skills and experience</li>
+                    <li class="list-group-item bg-transparent text-white">Get matched with relevant job opportunities</li>
+                    <li class="list-group-item bg-transparent text-white">Receive detailed insights and recommendations</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-star me-2"></i>Key Features
+                </h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item bg-transparent text-white">
+                        <i class="fas fa-check-circle text-success me-2"></i>Advanced AI-powered analysis
+                    </li>
+                    <li class="list-group-item bg-transparent text-white">
+                        <i class="fas fa-check-circle text-success me-2"></i>Real-time job matching
+                    </li>
+                    <li class="list-group-item bg-transparent text-white">
+                        <i class="fas fa-check-circle text-success me-2"></i>Skill gap analysis
+                    </li>
+                    <li class="list-group-item bg-transparent text-white">
+                        <i class="fas fa-check-circle text-success me-2"></i>Resume optimization tips
+                    </li>
+                    <li class="list-group-item bg-transparent text-white">
+                        <i class="fas fa-check-circle text-success me-2"></i>Career path recommendations
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if user.is_authenticated %}
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Ready to get started?</h5>
+                <p class="card-text">Upload your resume and discover your perfect job matches!</p>
+                <a href="{% url 'upload_resume' %}" class="btn btn-primary">
+                    <i class="fas fa-upload me-2"></i>Upload Resume Now
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %} 

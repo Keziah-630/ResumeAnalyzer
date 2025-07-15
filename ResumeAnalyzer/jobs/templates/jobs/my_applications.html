@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}My Applications - Resume Analyzer{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h3>
+            <i class="fas fa-clipboard-list me-2"></i>My Applications
+            {% if applications %}
+            <span class="badge bg-primary ms-2">{{ applications.count }}</span>
+            {% endif %}
+        </h3>
+    </div>
+</div>
+
+{% if applications %}
+<div class="row">
+    {% for application in applications %}
+    <div class="col-12 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h5 class="card-title">
+                            <a href="{% url 'job_detail' application.job.id %}" class="text-decoration-none">
+                                {{ application.job.title }}
+                            </a>
+                        </h5>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            <i class="fas fa-building me-1"></i>{{ application.job.company }}
+                        </h6>
+                        <p class="card-text mb-2">
+                            <i class="fas fa-map-marker-alt me-1"></i>{{ application.job.location }}
+                        </p>
+                        <div class="mb-2">
+                            <span class="badge bg-info me-1">{{ application.job.get_job_type_display }}</span>
+                            <span class="badge bg-secondary me-1">{{ application.job.get_experience_level_display }}</span>
+                            {% if application.job.salary_range != "Not specified" %}
+                            <span class="badge bg-success">{{ application.job.salary_range }}</span>
+                            {% endif %}
+                        </div>
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-calendar me-1"></i>Applied on {{ application.applied_at|date:"M d, Y" }}
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="mb-2">
+                            <span class="badge bg-{% if application.status == 'applied' %}secondary{% elif application.status == 'reviewing' %}info{% elif application.status == 'interviewing' %}warning{% elif application.status == 'offered' %}success{% elif application.status == 'accepted' %}success{% else %}danger{% endif %}">
+                                {{ application.get_status_display }}
+                            </span>
+                        </div>
+                        {% if application.match_score %}
+                        <div class="mb-2">
+                            <small class="text-muted">Match Score:</small>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: {{ application.match_score }}%">
+                                    {{ application.match_score }}%
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="btn-group-vertical">
+                            <a href="{% url 'job_detail' application.job.id %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>View Job
+                            </a>
+                            <a href="{% url 'withdraw_application' application.id %}" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-times me-1"></i>Withdraw
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                <h5>No applications yet</h5>
+                <p class="text-muted">Start applying to jobs to see your applications here.</p>
+                <a href="{% url 'job_list' %}" class="btn btn-primary">
+                    <i class="fas fa-search me-2"></i>Browse Jobs
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col-12">
+        <a href="{% url 'job_list' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Jobs
+        </a>
+    </div>
+</div>
+{% endblock %} 
