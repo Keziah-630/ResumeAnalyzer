@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Job Match Preferences{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2><i class="fas fa-sliders-h me-2"></i>Job Match Preferences</h2>
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="match_threshold" class="form-label">Match Score Threshold (%)</label>
+            <input type="number" class="form-control" id="match_threshold" name="match_threshold" min="0" max="100" value="{{ preferences.match_threshold|default:70 }}">
+        </div>
+        <div class="mb-3">
+            <label for="salary_min" class="form-label">Minimum Salary</label>
+            <input type="number" class="form-control" id="salary_min" name="salary_min" value="{{ preferences.salary_min|default:'' }}">
+        </div>
+        <div class="mb-3">
+            <label for="salary_max" class="form-label">Maximum Salary</label>
+            <input type="number" class="form-control" id="salary_max" name="salary_max" value="{{ preferences.salary_max|default:'' }}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Preferred Job Types</label>
+            <select class="form-select" name="preferred_job_types" multiple>
+                {% for value, label in job_types %}
+                <option value="{{ value }}" {% if value in preferences.preferred_job_types %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Preferred Experience Levels</label>
+            <select class="form-select" name="preferred_experience_levels" multiple>
+                {% for value, label in experience_levels %}
+                <option value="{{ value }}" {% if value in preferences.preferred_experience_levels %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Preferred Locations</label>
+            <input type="text" class="form-control" name="preferred_locations" value="{{ preferences.preferred_locations|join:', ' }}" placeholder="e.g. Hyderabad, Bangalore">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Required Skills</label>
+            <input type="text" class="form-control" name="required_skills" value="{{ preferences.required_skills|join:', ' }}" placeholder="e.g. Python, Django, SQL">
+        </div>
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="email_notifications" name="email_notifications" {% if preferences.email_notifications %}checked{% endif %}>
+            <label class="form-check-label" for="email_notifications">
+                Email me about new matches
+            </label>
+        </div>
+        <button type="submit" class="btn btn-success"><i class="fas fa-save me-2"></i>Save Preferences</button>
+        <a href="{% url 'job_matches' %}" class="btn btn-secondary ms-2">Back to Matches</a>
+    </form>
+</div>
+{% endblock %} 

@@ -8,7 +8,6 @@ class ForgotPasswordForm(forms.Form):
     
     VERIFICATION_CHOICES = [
         ('email', 'Email Address'),
-        ('phone', 'Phone Number'),
     ]
     
     username = forms.CharField(

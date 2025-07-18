@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Match History{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2><i class="fas fa-history me-2"></i>Match History</h2>
+    {% if history %}
+    <table class="table table-dark table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Job Title</th>
+                <th>Company</th>
+                <th>Action</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in history %}
+            <tr>
+                <td>{{ entry.job_match.job.title }}</td>
+                <td>{{ entry.job_match.job.company }}</td>
+                <td>{{ entry.action|capfirst }}</td>
+                <td>{{ entry.timestamp|date:"M d, Y H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="mt-3">
+        {% if history.has_previous %}
+            <a href="?page={{ history.previous_page_number }}" class="btn btn-outline-info">Previous</a>
+        {% endif %}
+        <span class="mx-2">Page {{ history.number }} of {{ history.paginator.num_pages }}</span>
+        {% if history.has_next %}
+            <a href="?page={{ history.next_page_number }}" class="btn btn-outline-info">Next</a>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="alert alert-info mt-4">No match history found.</div>
+    {% endif %}
+</div>
+{% endblock %} 

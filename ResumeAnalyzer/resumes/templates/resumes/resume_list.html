@@ -43,17 +43,7 @@
                     </div>
                 </div>
                 
-                <div class="mb-3">
-                    <h6>Skills</h6>
-                    <div class="skills-container">
-                        {% for skill in resume.skills|slice:":100"|split:"," %}
-                        <span class="badge bg-info me-1 mb-1">{{ skill|truncatechars:15 }}</span>
-                        {% endfor %}
-                        {% if resume.skills|length > 100 %}
-                        <small class="text-muted">+ more</small>
-                        {% endif %}
-                    </div>
-                </div>
+
                 
                 <div class="row mb-3">
                     <div class="col-6">

@@ -5,15 +5,7 @@ import re
 class ResumeForm(forms.ModelForm):
     class Meta:
         model = Resume
-        fields = [
-            'full_name', 'email', 'phone', 'github', 'linkedin',
-            'skills', 'education', 'experience', 'resume_file'
-        ]
-        widgets = {
-            'skills': forms.Textarea(attrs={'rows': 2}),
-            'education': forms.Textarea(attrs={'rows': 2}),
-            'experience': forms.Textarea(attrs={'rows': 2}),
-        }
+        fields = ['resume_file']
 
     def clean_email(self):
         email = self.cleaned_data['email']

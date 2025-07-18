@@ -9,8 +9,8 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
-                        <h2 class="card-title">{{ job.title }}</h2>
-                        <h5 class="text-muted">{{ job.company }}</h5>
+                        <h2 class="card-title text-white">{{ job.title }}</h2>
+                        <h5 class="text-white">{{ job.company }}</h5>
                     </div>
                     {% if user.is_staff %}
                     <div>
@@ -26,12 +26,12 @@
                 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <p><i class="fas fa-map-marker-alt me-2"></i>{{ job.location }}</p>
-                        <p><i class="fas fa-clock me-2"></i>{{ job.get_job_type_display }}</p>
+                        <p class="text-white"><i class="fas fa-map-marker-alt me-2"></i>{{ job.location }}</p>
+                        <p class="text-white"><i class="fas fa-clock me-2"></i>{{ job.get_job_type_display }}</p>
                     </div>
                     <div class="col-md-6">
-                        <p><i class="fas fa-user-tie me-2"></i>{{ job.get_experience_level_display }}</p>
-                        <p><i class="fas fa-dollar-sign me-2"></i>{{ job.salary_range }}</p>
+                        <p class="text-white"><i class="fas fa-user-tie me-2"></i>{{ job.get_experience_level_display }}</p>
+                        <p class="text-white"><i class="fas fa-dollar-sign me-2"></i>{{ job.salary_range }}</p>
                     </div>
                 </div>
                 
@@ -45,18 +45,18 @@
                 
                 <hr>
                 
-                <h5><i class="fas fa-file-alt me-2"></i>Job Description</h5>
-                <p>{{ job.description|linebreaks }}</p>
+                <h5 class="text-white"><i class="fas fa-file-alt me-2"></i>Job Description</h5>
+                <p class="text-white">{{ job.description|linebreaks }}</p>
                 
-                <h5><i class="fas fa-list-check me-2"></i>Requirements</h5>
-                <p>{{ job.requirements|linebreaks }}</p>
+                <h5 class="text-white"><i class="fas fa-list-check me-2"></i>Requirements</h5>
+                <p class="text-white">{{ job.requirements|linebreaks }}</p>
                 
                 {% if job.benefits %}
-                <h5><i class="fas fa-gift me-2"></i>Benefits</h5>
-                <p>{{ job.benefits|linebreaks }}</p>
+                <h5 class="text-white"><i class="fas fa-gift me-2"></i>Benefits</h5>
+                <p class="text-white">{{ job.benefits|linebreaks }}</p>
                 {% endif %}
                 
-                <h5><i class="fas fa-tools me-2"></i>Required Skills</h5>
+                <h5 class="text-white"><i class="fas fa-tools me-2"></i>Required Skills</h5>
                 <div class="mb-3">
                     {% for skill in job.skills_list %}
                     <span class="badge bg-primary me-1">{{ skill }}</span>
@@ -73,22 +73,22 @@
                     <i class="fas fa-info-circle me-2"></i>Job Details
                 </h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2">
+                    <li class="mb-2 text-white">
                         <i class="fas fa-building me-2"></i><strong>Company:</strong> {{ job.company }}
                     </li>
-                    <li class="mb-2">
+                    <li class="mb-2 text-white">
                         <i class="fas fa-map-marker-alt me-2"></i><strong>Location:</strong> {{ job.location }}
                     </li>
-                    <li class="mb-2">
+                    <li class="mb-2 text-white">
                         <i class="fas fa-clock me-2"></i><strong>Type:</strong> {{ job.get_job_type_display }}
                     </li>
-                    <li class="mb-2">
+                    <li class="mb-2 text-white">
                         <i class="fas fa-user-tie me-2"></i><strong>Level:</strong> {{ job.get_experience_level_display }}
                     </li>
-                    <li class="mb-2">
+                    <li class="mb-2 text-white">
                         <i class="fas fa-dollar-sign me-2"></i><strong>Salary:</strong> {{ job.salary_range }}
                     </li>
-                    <li class="mb-2">
+                    <li class="mb-2 text-white">
                         <i class="fas fa-calendar me-2"></i><strong>Posted:</strong> {{ job.created_at|date:"M d, Y" }}
                     </li>
                 </ul>
@@ -120,8 +120,8 @@
                 </div>
                 {% else %}
                 <div class="text-center">
-                    <h6>Interested in this position?</h6>
-                    <p class="text-muted">Submit your application to get started.</p>
+                    <h6 class="text-white">Interested in this position?</h6>
+                    <p class="text-white">Submit your application to get started.</p>
                     <a href="{% url 'apply_job' job.id %}" class="btn btn-primary">
                         <i class="fas fa-paper-plane me-2"></i>Apply Now
                     </a>

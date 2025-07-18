@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Resume Upload Confirmation{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    
+                    <h3 class="card-title text-white mb-3">Resume Upload Successful!</h3>
+                    
+                    <div class="alert alert-success">
+                        <h5><i class="fas fa-file-alt me-2"></i>{{ resume.full_name }}</h5>
+                        <p class="mb-2"><strong>Email:</strong> {{ resume.email }}</p>
+                        <p class="mb-2"><strong>Phone:</strong> {{ resume.phone }}</p>
+                        <p class="mb-0"><strong>Uploaded:</strong> {{ resume.uploaded_at|date:"M d, Y" }}</p>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card bg-dark">
+                                <div class="card-body">
+                                    <h6 class="text-white"><i class="fas fa-tools me-2"></i>Skills Found</h6>
+                                    <div class="mb-2">
+                                        {% for skill in resume.skills|split:","|slice:":6" %}
+                                        <span class="badge bg-info me-1 mb-1">{{ skill|striptags }}</span>
+                                        {% endfor %}
+                                        {% if resume.skills|split:","|length > 6 %}
+                                        <small class="text-muted">+{{ resume.skills|split:","|length|add:"-6" }} more</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-dark">
+                                <div class="card-body">
+                                    <h6 class="text-white"><i class="fas fa-graduation-cap me-2"></i>Education</h6>
+                                    <p class="text-white small mb-0">{{ resume.education|truncatewords:15 }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle me-2"></i>What's Next?</h6>
+                        <ul class="text-start mb-0">
+                            <li>Your resume has been processed and is ready for job applications</li>
+                            <li>Job matches have been generated based on your skills</li>
+                            <li>You can now analyze your resume for detailed insights</li>
+                            <li>Start applying to jobs that match your profile</li>
+                        </ul>
+                    </div>
+                    
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-lg me-2">
+                            <i class="fas fa-check me-2"></i>Confirm & Continue
+                        </button>
+                    </form>
+                    
+                    <a href="{% url 'resume_detail' resume.id %}" class="btn btn-outline-info btn-lg">
+                        <i class="fas fa-eye me-2"></i>View Resume Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

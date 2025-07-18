@@ -45,6 +45,17 @@ class JobMatch(models.Model):
             return 'fair'
         else:
             return 'poor'
+    
+    def get_match_level_display(self):
+        """Get human-readable match level"""
+        levels = {
+            'excellent': 'Excellent Match',
+            'very_good': 'Very Good Match',
+            'good': 'Good Match',
+            'fair': 'Fair Match',
+            'poor': 'Poor Match'
+        }
+        return levels.get(self.match_level, 'Unknown')
 
 class MatchPreference(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

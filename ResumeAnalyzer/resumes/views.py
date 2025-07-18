@@ -19,13 +19,23 @@ def upload_resume(request):
             from matcher.views import generate_job_matches
             generate_job_matches(request.user, resume)
             
-            messages.success(request, "Resume uploaded successfully! Job matches have been generated.")
-            return redirect('resume_list')
+            messages.success(request, "✅ Resume uploaded successfully!")
+            # Redirect to confirmation page
+            return redirect('resume_confirmation', resume_id=resume.id)
         else:
-            messages.error(request, "Please correct the highlighted errors.")
+            messages.error(request, "❌ Please correct the highlighted errors before uploading.")
     else:
         form = ResumeForm()
     return render(request, 'resumes/upload_resume.html', {'form': form})
+
+@login_required
+def resume_confirmation(request, resume_id):
+    resume = get_object_or_404(Resume, id=resume_id, user=request.user)
+    if request.method == 'POST':
+        messages.success(request, '✅ Resume confirmed! Your resume is ready for job applications.')
+        return redirect('resume_detail', resume_id=resume.id)
+    
+    return render(request, 'resumes/resume_confirmation.html', {'resume': resume})
 
 @login_required
 def resume_list(request):

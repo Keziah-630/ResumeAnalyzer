@@ -56,10 +56,14 @@ def match_detail(request, match_id):
         match.save()
         MatchHistory.objects.create(user=request.user, job_match=match, action='viewed')
     
+    # Check if user has already applied
+    user_has_applied = JobApplication.objects.filter(user=request.user, job=match.job).exists()
+    
     context = {
         'match': match,
         'job': match.job,
         'resume': match.resume,
+        'user_has_applied': user_has_applied,
     }
     return render(request, 'matcher/match_detail.html', context)
 
@@ -199,33 +203,44 @@ def generate_job_matches(user, resume):
 
 def calculate_match_score(resume, job):
     """Calculate match score between resume and job"""
-    # Skills match (40% weight)
-    resume_skills = set(resume.skills.lower().split(','))
-    job_skills = set(job.skills_required.lower().split(','))
+    # Skills match (50% weight)
+    resume_skills = set([skill.strip().lower() for skill in resume.skills.split(',') if skill.strip()])
+    job_skills = set([skill.strip().lower() for skill in job.skills_required.split(',') if skill.strip()])
     
     if job_skills:
         skills_match = len(resume_skills & job_skills) / len(job_skills) * 100
     else:
         skills_match = 0
     
-    # Experience match (30% weight)
-    experience_match = 70  # Placeholder - could be more sophisticated
+    # Experience match (30% weight) - based on job level vs resume content
+    experience_match = 70  # Base score
+    if job.experience_level == 'entry' and len(resume.experience) > 50:
+        experience_match = 85
+    elif job.experience_level == 'mid' and len(resume.experience) > 100:
+        experience_match = 80
+    elif job.experience_level == 'senior' and len(resume.experience) > 200:
+        experience_match = 75
     
-    # Location match (20% weight)
-    location_match = 80  # Placeholder - could check actual location matching
+    # Location match (20% weight) - simple location matching
+    location_match = 60  # Base score
+    resume_location = resume.location.lower() if hasattr(resume, 'location') and resume.location else ''
+    job_location = job.location.lower()
     
-    # Other factors (10% weight)
-    other_match = 75  # Placeholder
+    if resume_location and job_location:
+        if resume_location in job_location or job_location in resume_location:
+            location_match = 90
+        elif any(city in resume_location for city in ['hyderabad', 'bangalore', 'mumbai', 'delhi', 'chennai']):
+            location_match = 75
     
     # Calculate overall score
-    overall_score = (skills_match * 0.4 + experience_match * 0.3 + location_match * 0.2 + other_match * 0.1)
+    overall_score = (skills_match * 0.5 + experience_match * 0.3 + location_match * 0.2)
     
     return round(overall_score, 1), round(skills_match, 1), round(experience_match, 1), round(location_match, 1)
 
 def get_skill_matches(resume, job):
     """Get matching and missing skills"""
-    resume_skills = set(resume.skills.lower().split(','))
-    job_skills = set(job.skills_required.lower().split(','))
+    resume_skills = set([skill.strip().lower() for skill in resume.skills.split(',') if skill.strip()])
+    job_skills = set([skill.strip().lower() for skill in job.skills_required.split(',') if skill.strip()])
     
     matching_skills = list(resume_skills & job_skills)
     missing_skills = list(job_skills - resume_skills)
@@ -236,14 +251,38 @@ def get_match_reasons(resume, job, match_score):
     """Get reasons for the match score"""
     reasons = []
     
-    if match_score >= 80:
-        reasons.append("Excellent skills match")
-        reasons.append("Strong experience alignment")
-    elif match_score >= 60:
-        reasons.append("Good skills overlap")
-        reasons.append("Relevant experience")
+    # Skills analysis
+    resume_skills = set([skill.strip().lower() for skill in resume.skills.split(',') if skill.strip()])
+    job_skills = set([skill.strip().lower() for skill in job.skills_required.split(',') if skill.strip()])
+    skills_match_count = len(resume_skills & job_skills)
+    
+    if skills_match_count >= 3:
+        reasons.append(f"Strong skills match ({skills_match_count} skills aligned)")
+    elif skills_match_count >= 1:
+        reasons.append(f"Partial skills match ({skills_match_count} skills aligned)")
     else:
-        reasons.append("Some skills match")
-        reasons.append("Consider skill development")
+        reasons.append("Limited skills overlap")
+    
+    # Experience analysis
+    if len(resume.experience) > 100:
+        reasons.append("Detailed experience description")
+    else:
+        reasons.append("Consider expanding experience details")
+    
+    # Location analysis
+    resume_location = resume.location.lower() if hasattr(resume, 'location') and resume.location else ''
+    job_location = job.location.lower()
+    if resume_location and job_location and (resume_location in job_location or job_location in resume_location):
+        reasons.append("Location match")
+    
+    # Overall assessment
+    if match_score >= 85:
+        reasons.append("Excellent overall match")
+    elif match_score >= 70:
+        reasons.append("Good match potential")
+    elif match_score >= 50:
+        reasons.append("Moderate match")
+    else:
+        reasons.append("Limited match - consider skill development")
     
     return reasons

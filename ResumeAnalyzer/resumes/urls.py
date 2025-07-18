@@ -6,4 +6,5 @@ urlpatterns = [
     path('upload/', views.upload_resume, name='upload_resume'),
     path('<int:resume_id>/', views.resume_detail, name='resume_detail'),
     path('<int:resume_id>/delete/', views.delete_resume, name='delete_resume'),
+    path('<int:resume_id>/confirm/', views.resume_confirmation, name='resume_confirmation'),
 ]

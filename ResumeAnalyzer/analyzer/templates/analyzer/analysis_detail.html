@@ -14,41 +14,62 @@
                 
                 <!-- Overall Score -->
                 <div class="text-center mb-4">
-                    <div class="display-4 text-{{ analysis.score_color }} mb-2">
-                        {{ analysis.overall_score }}%
-                    </div>
-                    <h5>Overall Score</h5>
-                    <div class="progress mb-3">
-                        <div class="progress-bar bg-{{ analysis.score_color }}" role="progressbar" style="width: {{ analysis.overall_score }}%">
+                    {% if analysis.overall_score %}
+                        <div class="display-4 text-{{ analysis.score_color }} mb-2">
                             {{ analysis.overall_score }}%
                         </div>
-                    </div>
+                        <h5>Overall Score</h5>
+                        <div class="progress mb-3">
+                            <div class="progress-bar bg-{{ analysis.score_color }}" role="progressbar" style="width: {{ analysis.overall_score }}%">
+                                {{ analysis.overall_score }}%
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="display-4 text-muted mb-2">
+                            Not Analyzed
+                        </div>
+                        <h5>Overall Score</h5>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>Click "Start Analysis" to analyze your resume
+                        </div>
+                        <a href="{% url 'analyze_resume' resume.id %}" class="btn btn-warning btn-lg">
+                            <i class="fas fa-magic me-2"></i>Start Analysis
+                        </a>
+                    {% endif %}
                 </div>
                 
                 <!-- Detailed Scores -->
                 <div class="row mb-4">
                     <div class="col-md-3">
                         <div class="text-center">
-                            <h4 class="text-info">{{ analysis.skills_score }}%</h4>
+                            <h4 class="text-info">
+                                {% if analysis.skills_score %}{{ analysis.skills_score }}%{% else %}--{% endif %}
+                            </h4>
                             <small>Skills</small>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="text-center">
-                            <h4 class="text-warning">{{ analysis.experience_score }}%</h4>
+                            <h4 class="text-warning">
+                                {% if analysis.experience_score %}{{ analysis.experience_score }}%{% else %}--{% endif %}
+                            </h4>
                             <small>Experience</small>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="text-center">
-                            <h4 class="text-success">{{ analysis.education_score }}%</h4>
+                            <h4 class="text-success">
+                                {% if analysis.education_score %}{{ analysis.education_score }}%{% else %}--{% endif %}
+                            </h4>
                             <small>Education</small>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="text-center">
-                            <h4 class="text-primary">{{ analysis.formatting_score }}%</h4>
-                            <small>Formatting</small>
+                            <h4 class="text-primary">
+                                {% if analysis.formatting_score %}{{ analysis.formatting_score }}%{% else %}--{% endif %}
+                            </h4>
+                            <small>ATS Formatting</small>
                         </div>
                     </div>
                 </div>
@@ -62,26 +83,78 @@
                     <i class="fas fa-tools me-2"></i>Skills Analysis
                 </h5>
                 
-                <h6>Extracted Skills</h6>
-                <div class="mb-3">
-                    {% for skill in analysis.extracted_skills %}
-                    <span class="badge bg-success me-1">{{ skill }}</span>
-                    {% endfor %}
-                </div>
+                {% if analysis.extracted_skills %}
+                    <h6>Extracted Skills ({{ analysis.extracted_skills|length }})</h6>
+                    <div class="mb-3">
+                        {% for skill in analysis.extracted_skills %}
+                        <span class="badge bg-success me-1 mb-1">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <h6>Skill Gaps</h6>
+                    <div class="mb-3">
+                        {% for skill in analysis.skill_gaps %}
+                        <span class="badge bg-warning me-1 mb-1">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <h6>Industry Keywords</h6>
+                    <div class="mb-3">
+                        {% for keyword in analysis.industry_keywords %}
+                        <span class="badge bg-info me-1 mb-1">{{ keyword }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>Skills will be analyzed when you run the analysis
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- ATS Optimization -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-search me-2"></i>ATS Optimization Check
+                </h5>
                 
-                <h6>Skill Gaps</h6>
-                <div class="mb-3">
-                    {% for skill in analysis.skill_gaps %}
-                    <span class="badge bg-warning me-1">{{ skill }}</span>
-                    {% endfor %}
-                </div>
-                
-                <h6>Industry Keywords</h6>
-                <div class="mb-3">
-                    {% for keyword in analysis.industry_keywords %}
-                    <span class="badge bg-info me-1">{{ keyword }}</span>
-                    {% endfor %}
-                </div>
+                {% if analysis.formatting_score %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>ATS Score: {{ analysis.formatting_score }}%</h6>
+                            <div class="progress mb-3">
+                                <div class="progress-bar bg-{% if analysis.formatting_score >= 80 %}success{% elif analysis.formatting_score >= 60 %}warning{% else %}danger{% endif %}" 
+                                     role="progressbar" style="width: {{ analysis.formatting_score }}%">
+                                    {{ analysis.formatting_score }}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>ATS Keywords Found</h6>
+                            <div class="mb-3">
+                                {% for keyword in analysis.industry_keywords %}
+                                <span class="badge bg-primary me-1 mb-1">{{ keyword }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-{% if analysis.formatting_score >= 80 %}success{% elif analysis.formatting_score >= 60 %}warning{% else %}danger{% endif %}">
+                        <i class="fas fa-{% if analysis.formatting_score >= 80 %}check-circle{% elif analysis.formatting_score >= 60 %}exclamation-triangle{% else %}times-circle{% endif %} me-2"></i>
+                        {% if analysis.formatting_score >= 80 %}
+                            Excellent! Your resume is well-optimized for ATS systems.
+                        {% elif analysis.formatting_score >= 60 %}
+                            Good! Your resume has decent ATS optimization but could be improved.
+                        {% else %}
+                            Your resume needs ATS optimization improvements.
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>ATS optimization will be checked when you run the analysis
+                    </div>
+                {% endif %}
             </div>
         </div>
         
@@ -91,13 +164,19 @@
                 <h5 class="card-title">
                     <i class="fas fa-lightbulb me-2"></i>Recommendations
                 </h5>
-                <ul class="list-group list-group-flush">
-                    {% for recommendation in analysis.recommendations %}
-                    <li class="list-group-item bg-transparent text-white">
-                        <i class="fas fa-check-circle text-success me-2"></i>{{ recommendation }}
-                    </li>
-                    {% endfor %}
-                </ul>
+                {% if analysis.recommendations %}
+                    <ul class="list-group list-group-flush">
+                        {% for recommendation in analysis.recommendations %}
+                        <li class="list-group-item bg-transparent text-white">
+                            <i class="fas fa-check-circle text-success me-2"></i>{{ recommendation }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>Recommendations will be generated when you run the analysis
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -110,23 +189,29 @@
                     <i class="fas fa-brain me-2"></i>Career Insights
                 </h5>
                 
-                {% for insight in career_insights %}
-                <div class="mb-3 p-3 border border-{{ insight.priority|yesno:'danger,warning,info' }} rounded">
-                    <h6 class="text-{{ insight.priority|yesno:'danger,warning,info' }}">
-                        {{ insight.title }}
-                    </h6>
-                    <p class="small">{{ insight.description }}</p>
-                    
-                    {% if insight.action_items %}
-                    <small class="text-muted">Action Items:</small>
-                    <ul class="small">
-                        {% for item in insight.action_items %}
-                        <li>{{ item }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                </div>
-                {% endfor %}
+                {% if career_insights %}
+                    {% for insight in career_insights %}
+                    <div class="mb-3 p-3 border border-{% if insight.priority == 'high' %}danger{% elif insight.priority == 'medium' %}warning{% else %}info{% endif %} rounded">
+                        <h6 class="text-{% if insight.priority == 'high' %}danger{% elif insight.priority == 'medium' %}warning{% else %}info{% endif %}">
+                            {{ insight.title }}
+                        </h6>
+                        <p class="small">{{ insight.description }}</p>
+                        
+                        {% if insight.action_items %}
+                        <small class="text-muted">Action Items:</small>
+                        <ul class="small">
+                            {% for item in insight.action_items %}
+                            <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>Career insights will be generated when you run the analysis
+                    </div>
+                {% endif %}
             </div>
         </div>
         

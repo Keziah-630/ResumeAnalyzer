@@ -1,45 +1,65 @@
 {% extends 'base.html' %}
+{% load resume_extras %}
 
 {% block title %}{{ resume.full_name }} - Resume Detail{% endblock %}
+
+<style>
+  .card-body p.text-white {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+  
+  .card-body h5.text-white {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #ffffff !important;
+  }
+  
+  .badge {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.8rem;
+  }
+</style>
 
 {% block content %}
 <div class="row">
     <div class="col-md-8">
         <div class="card mb-4">
             <div class="card-body">
-                <h3 class="card-title">
+                <h3 class="card-title text-white">
                     <i class="fas fa-user me-2"></i>{{ resume.full_name }}
                 </h3>
                 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <p><i class="fas fa-envelope me-2"></i>{{ resume.email }}</p>
-                        <p><i class="fas fa-phone me-2"></i>{{ resume.phone }}</p>
+                        <p class="text-white"><i class="fas fa-envelope me-2"></i>{{ resume.email }}</p>
+                        <p class="text-white"><i class="fas fa-phone me-2"></i>{{ resume.phone }}</p>
                     </div>
                     <div class="col-md-6">
                         {% if resume.github %}
-                        <p><i class="fab fa-github me-2"></i><a href="{{ resume.github }}" target="_blank">GitHub</a></p>
+                        <p class="text-white"><i class="fab fa-github me-2"></i><a href="{{ resume.github }}" target="_blank" class="text-info">GitHub</a></p>
                         {% endif %}
                         {% if resume.linkedin %}
-                        <p><i class="fab fa-linkedin me-2"></i><a href="{{ resume.linkedin }}" target="_blank">LinkedIn</a></p>
+                        <p class="text-white"><i class="fab fa-linkedin me-2"></i><a href="{{ resume.linkedin }}" target="_blank" class="text-info">LinkedIn</a></p>
                         {% endif %}
                     </div>
                 </div>
                 
                 <hr>
                 
-                <h5><i class="fas fa-tools me-2"></i>Skills</h5>
+                <h5 class="text-white"><i class="fas fa-tools me-2"></i>Skills</h5>
                 <div class="mb-3">
                     {% for skill in resume.skills|split:"," %}
-                    <span class="badge bg-info me-1 mb-1">{{ skill|strip }}</span>
+                    <span class="badge bg-info me-1 mb-1">{{ skill|striptags }}</span>
                     {% endfor %}
                 </div>
                 
-                <h5><i class="fas fa-graduation-cap me-2"></i>Education</h5>
-                <p>{{ resume.education|linebreaks }}</p>
+                <h5 class="text-white"><i class="fas fa-graduation-cap me-2"></i>Education</h5>
+                <p class="text-white">{{ resume.education|linebreaks }}</p>
                 
-                <h5><i class="fas fa-briefcase me-2"></i>Experience</h5>
-                <p>{{ resume.experience|linebreaks }}</p>
+                <h5 class="text-white"><i class="fas fa-briefcase me-2"></i>Experience</h5>
+                <p class="text-white">{{ resume.experience|linebreaks }}</p>
                 
                 <div class="mt-3">
                     <a href="{{ resume.resume_file.url }}" target="_blank" class="btn btn-primary">
